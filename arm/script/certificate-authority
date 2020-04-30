@@ -60,7 +60,7 @@ cat > admin-csr.json <<EOF
       "C": "US",
       "L": "Seattle",
       "O": "system:masters",
-      "OU": "Kubernetes The Hard WayWSWS",
+      "OU": "Kubernetes The Hard WayWS",
       "ST": "Washington"
     }
   ]
@@ -93,7 +93,7 @@ for number in 0 1 2; do
       "C": "US",
       "L": "Seattle",
       "O": "system:nodes",
-      "OU": "Kubernetes The Hard WayWSWS",
+      "OU": "Kubernetes The Hard WayWS",
       "ST": "Washington"
     }
   ]
