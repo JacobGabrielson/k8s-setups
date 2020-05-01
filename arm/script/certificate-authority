@@ -252,3 +252,4 @@ cfssl gencert \
       -profile=kubernetes \
       service-account-csr.json | cfssljson -bare service-account
 
+exit

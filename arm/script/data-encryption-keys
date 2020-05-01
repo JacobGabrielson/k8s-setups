@@ -1,0 +1,27 @@
+#!/bin/bash
+
+set -feuo pipefail
+
+# Generating the Data Encryption Config and Key
+
+## The Encryption Key
+
+ENCRYPTION_KEY=$(head -c 32 /dev/urandom | base64)
+
+## The Encryption Config File
+
+cat > encryption-config.yaml <<EOF
+kind: EncryptionConfig
+apiVersion: v1
+resources:
+  - resources:
+      - secrets
+    providers:
+      - aescbc:
+          keys:
+            - name: key1
+              secret: ${ENCRYPTION_KEY}
+      - identity: {}
+EOF
+
+exit
