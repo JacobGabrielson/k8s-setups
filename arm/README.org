@@ -1,0 +1,4 @@
+This set up demonstrates setting up Kubernetes on EC2 arm64-based
+instances. Much thanks to Kelsey Hightower for putting together the
+excellent [[https://github.com/kelseyhightower/kubernetes-the-hard-way][Kubernetes the Hard Way]] tutorial on which it's based (I
+made as few changes as I could figure out how).
