@@ -25,3 +25,7 @@ RUN /script/certificate-authority
 RUN /script/kubernetes-configuration-files
 RUN /script/data-encryption-keys
 RUN ls -ltr
+
+FROM ubuntu:20.04
+RUN apt-get update && apt-get install -y ruby-mustache rsync
+
