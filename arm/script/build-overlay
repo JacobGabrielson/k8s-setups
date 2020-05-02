@@ -1,0 +1,27 @@
+#!/bin/bash
+
+set -efuo pipefail
+
+source_dir=$1
+dest_dir=/tmp/$2
+pod_cidr=$3
+hostname=$4
+
+rm -rf $dest_dir
+mkdir -p $dest_dir
+
+rsync -tr $source_dir/ $dest_dir
+while read -r file
+do
+    echo $file
+    generated_file=${file%.*}
+    cat <<EOF | mustache - $file > $generated_file
+POD_CIDR: $pod_cidr
+HOSTNAME: $hostname
+EOF
+    cat $generated_file
+    rm $file
+done < <(find $dest_dir -type f -name \*.mustache)
+
+exit
+
