@@ -1,4 +1,4 @@
-FROM golang:1.14
+FROM golang:1.14 AS build
 
 WORKDIR /output
 
@@ -17,8 +17,6 @@ RUN chmod +x kube*
 
 COPY ./script /script
 
-WORKDIR /pki
-
 ENV PATH="/output:${PATH}"
 
 RUN /script/certificate-authority
@@ -28,4 +26,16 @@ RUN ls -ltr
 
 FROM ubuntu:20.04
 RUN apt-get update && apt-get install -y ruby-mustache rsync
+
+COPY --from=build /output /output
+COPY --from=build /script /script
+
+COPY ./overlays /overlays
+WORKDIR /generated-overlays
+
+RUN mkdir -p worker-0
+RUN /script/build-overlay /overlays/worker worker-0 worker-0 10.200.0.0/24
+RUN ls -lR worker-0/
+
+
 

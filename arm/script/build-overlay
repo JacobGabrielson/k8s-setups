@@ -3,9 +3,9 @@
 set -efuo pipefail
 
 source_dir=$1
-dest_dir=/tmp/$2
-pod_cidr=$3
-hostname=$4
+dest_dir=$2
+hostname=$3
+pod_cidr=$4
 
 rm -rf $dest_dir
 mkdir -p $dest_dir
