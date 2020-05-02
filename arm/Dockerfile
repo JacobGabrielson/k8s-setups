@@ -13,6 +13,9 @@ RUN curl -s -o kube-apiserver -L https://storage.googleapis.com/kubernetes-relea
 RUN curl -s -o kube-controller-manager -L https://storage.googleapis.com/kubernetes-release/release/v1.15.3/bin/linux/arm64/kube-controller-manager
 RUN curl -s -o kube-scheduler -L https://storage.googleapis.com/kubernetes-release/release/v1.15.3/bin/linux/arm64/kube-scheduler
 
+RUN curl -s -o - -L https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.15.0/crictl-v1.15.0-linux-arm64.tar.gz | tar -zxf - crictl
+RUN curl -s -o - -L https://github.com/containernetworking/plugins/releases/download/v0.8.2/cni-plugins-linux-arm64-v0.8.2.tgz | tar -zxf -
+
 RUN chmod +x kube*
 
 COPY ./script /script
@@ -28,13 +31,13 @@ FROM ubuntu:20.04
 RUN apt-get update && apt-get install -y ruby-mustache rsync
 
 COPY --from=build /output /output
-COPY --from=build /script /script
+COPY ./build-script /build-script
 
 COPY ./overlays /overlays
 WORKDIR /generated-overlays
 
 RUN mkdir -p worker-0
-RUN /script/build-overlay /overlays/worker worker-0 worker-0 10.200.0.0/24
+RUN /build-script/build-overlay /overlays/worker worker-0 worker-0 10.200.0.0/24 /output
 RUN ls -lR worker-0/
 
 

@@ -1,0 +1,48 @@
+#!/bin/bash
+
+set -efuo pipefail
+
+source_dir=$1
+dest_dir=$2
+hostname=$3
+pod_cidr=$4
+missing_files_dir=$5
+
+rm -rf $dest_dir
+mkdir -p $dest_dir
+
+rsync -tr $source_dir/ $dest_dir
+
+# Replace all the files that need mustache substitutions
+while read -r file
+do
+    echo $file
+    generated_file=${file%.*}
+    cat <<EOF | mustache - $file > $generated_file
+POD_CIDR: $pod_cidr
+HOSTNAME: $hostname
+EOF
+    cat $generated_file
+    rm $file
+done < <(find $dest_dir -type f -name \*.mustache)
+
+# Replace all missing files with the real ones
+while read -r missing_path
+do
+    echo $missing_path
+    missing=$(basename $missing_path)
+    desired_path=${missing_path%.*}
+    replacement=$missing_files_dir/$missing
+    if [[ -f $replacement_file ]]; then
+	cp -r $replacement_file $desired_path
+	rm $missing_path
+    else
+	echo 1>&2 "Unable to find replacement for '$missing_path' in '$missing_files_dir'"
+	exit 2
+    fi
+	
+done < <(find $dest_dir -type f -name \*.missing)
+    
+
+exit
+
