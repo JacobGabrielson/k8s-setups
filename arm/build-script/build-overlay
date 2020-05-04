@@ -26,23 +26,28 @@ EOF
     rm $file
 done < <(find $dest_dir -type f -name \*.mustache)
 
+set -x
+
 # Replace all missing files with the real ones
 while read -r missing_path
 do
     echo $missing_path
     missing=$(basename $missing_path)
     desired_path=${missing_path%.*}
-    replacement=$missing_files_dir/$missing
-    if [[ -f $replacement_file ]]; then
-	cp -r $replacement_file $desired_path
+    priority_replacement=$missing_files_dir/$hostname/${missing%.*}
+    secondary_replacement=$missing_files_dir/${missing%.*}
+    if [[ -f $priority_replacement ]]; then
+	cp $priority_replacement $desired_path
+	rm $missing_path
+    elif [[ -f $secondary_replacement ]]; then
+	cp $secondary_replacement $desired_path
 	rm $missing_path
     else
 	echo 1>&2 "Unable to find replacement for '$missing_path' in '$missing_files_dir'"
+	ls $missing_files_dir
 	exit 2
     fi
-	
 done < <(find $dest_dir -type f -name \*.missing)
-    
 
 exit
 

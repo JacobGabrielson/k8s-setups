@@ -12,19 +12,22 @@ RUN curl -s -o kubectl -L https://storage.googleapis.com/kubernetes-release/rele
 RUN curl -s -o kube-apiserver -L https://storage.googleapis.com/kubernetes-release/release/v1.15.3/bin/linux/arm64/kube-apiserver
 RUN curl -s -o kube-controller-manager -L https://storage.googleapis.com/kubernetes-release/release/v1.15.3/bin/linux/arm64/kube-controller-manager
 RUN curl -s -o kube-scheduler -L https://storage.googleapis.com/kubernetes-release/release/v1.15.3/bin/linux/arm64/kube-scheduler
+RUN curl -s -o kube-proxy -L https://storage.googleapis.com/kubernetes-release/release/v1.15.3/bin/linux/arm64/kube-proxy
+RUN curl -s -o kubelet -L https://storage.googleapis.com/kubernetes-release/release/v1.15.3/bin/linux/arm64/kubelet
+
 
 RUN curl -s -o - -L https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.15.0/crictl-v1.15.0-linux-arm64.tar.gz | tar -zxf - crictl
 RUN curl -s -o - -L https://github.com/containernetworking/plugins/releases/download/v0.8.2/cni-plugins-linux-arm64-v0.8.2.tgz | tar -zxf -
 
 RUN chmod +x kube*
 
-COPY ./script /script
+COPY ./pki-script /pki-script
 
 ENV PATH="/output:${PATH}"
 
-RUN /script/certificate-authority
-RUN /script/kubernetes-configuration-files
-RUN /script/data-encryption-keys
+RUN /pki-script/certificate-authority
+RUN /pki-script/kubernetes-configuration-files
+RUN /pki-script/data-encryption-keys
 RUN ls -ltr
 
 FROM ubuntu:20.04
