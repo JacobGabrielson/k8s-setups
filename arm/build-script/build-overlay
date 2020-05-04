@@ -4,9 +4,8 @@ set -efuo pipefail
 
 source_dir=$1
 dest_dir=$2
-hostname=$3
-pod_cidr=$4
-missing_files_dir=$5
+yaml_file=$3
+shift 3				# "$@" is dirs to search for .missing
 
 rm -rf $dest_dir
 mkdir -p $dest_dir
@@ -18,11 +17,15 @@ while read -r file
 do
     echo $file
     generated_file=${file%.*}
-    cat <<EOF | mustache - $file > $generated_file
-POD_CIDR: $pod_cidr
-HOSTNAME: $hostname
-EOF
-    cat $generated_file
+    mustache $yaml_file $file > $generated_file
+    if cmp $generated_file $file
+    then
+	echo 1>&2 "$generated_file didn't change from $file, substitution must have failed:"
+	grep 1>&2 -F "{{" $file
+	exit 1
+    fi
+      
+    cat $generated_file		# XXX remove
     rm $file
 done < <(find $dest_dir -type f -name \*.mustache)
 
@@ -34,13 +37,9 @@ do
     echo $missing_path
     missing=$(basename $missing_path)
     desired_path=${missing_path%.*}
-    priority_replacement=$missing_files_dir/$hostname/${missing%.*}
-    secondary_replacement=$missing_files_dir/${missing%.*}
-    if [[ -f $priority_replacement ]]; then
-	cp $priority_replacement $desired_path
-	rm $missing_path
-    elif [[ -f $secondary_replacement ]]; then
-	cp $secondary_replacement $desired_path
+    if replacement=$(find "$@" -name "${missing%.*}" | head -1)
+    then
+	cp $replacement $desired_path
 	rm $missing_path
     else
 	echo 1>&2 "Unable to find replacement for '$missing_path' in '$missing_files_dir'"

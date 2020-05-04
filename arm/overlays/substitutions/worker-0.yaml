@@ -1,0 +1,2 @@
+POD_CIDR: 10.200.0.0/24
+HOSTNAME: worker-0

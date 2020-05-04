@@ -40,8 +40,10 @@ COPY ./overlays /overlays
 WORKDIR /generated-overlays
 
 RUN mkdir -p worker-0
-RUN /build-script/build-overlay /overlays/worker worker-0 worker-0 10.200.0.0/24 /output
+RUN /build-script/build-overlay /overlays/worker worker-0 /overlays/substitutions/worker-0.yaml /output/worker-0 /output
 RUN ls -lR worker-0/
 
-
+#RUN mkdir -p controller-0
+#RUN /build-script/build-overlay /overlays/controller controller-0 controller-0 10.200.0.0/24 /output
+#RUN ls -lR controller-0
 
