@@ -12,24 +12,25 @@ KUBERNETES_PUBLIC_ADDRESS=apiserver
 ### The kubelet Kubernetes Configuration File
 
 for instance in worker-0 worker-1 worker-2; do
+    ls ${instance}/
     kubectl config set-cluster kubernetes-the-hard-wayws \
 	    --certificate-authority=ca.pem \
 	    --embed-certs=true \
 	    --server=https://${KUBERNETES_PUBLIC_ADDRESS}:6443 \
-	    --kubeconfig=${instance}.kubeconfig
+	    --kubeconfig=${instance}/kubelet.kubeconfig
 
     kubectl config set-credentials system:node:${instance} \
-	    --client-certificate=${instance}.pem \
-	    --client-key=${instance}-key.pem \
+	    --client-certificate=${instance}/worker.pem \
+	    --client-key=${instance}/worker-key.pem \
 	    --embed-certs=true \
-	    --kubeconfig=${instance}.kubeconfig
+	    --kubeconfig=${instance}/kubelet.kubeconfig
 
     kubectl config set-context default \
 	    --cluster=kubernetes-the-hard-wayws \
 	    --user=system:node:${instance} \
-	    --kubeconfig=${instance}.kubeconfig
+	    --kubeconfig=${instance}/kubelet.kubeconfig
 
-    kubectl config use-context default --kubeconfig=${instance}.kubeconfig
+    kubectl config use-context default --kubeconfig=${instance}/kubelet.kubeconfig
 done
 
 

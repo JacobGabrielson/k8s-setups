@@ -80,6 +80,7 @@ EXTERNAL_IP=apiserver,apiserver.kubernetes.internal
 
 for number in 0 1 2; do
     instance=worker-${number}
+    mkdir -p $instance
     INTERNAL_IP=10.240.0.2${number}
     cat > ${instance}-csr.json <<EOF
 {
@@ -107,6 +108,9 @@ EOF
 	  -hostname=${instance},${EXTERNAL_IP},${INTERNAL_IP} \
 	  -profile=kubernetes \
 	  ${instance}-csr.json | cfssljson -bare ${instance}
+
+    mv ${instance}-key.pem  ${instance}/worker-key.pem
+    mv ${instance}.pem ${instance}/worker.pem
 done
 
 ### The Controller Manager Client Certificate
