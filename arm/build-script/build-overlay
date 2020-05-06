@@ -18,7 +18,7 @@ do
     echo $file
     generated_file=${file%.*}
     mustache $yaml_file $file > $generated_file
-    if cmp $generated_file $file
+    if cmp -s $generated_file $file
     then
 	echo 1>&2 "$generated_file didn't change from $file, substitution must have failed:"
 	grep 1>&2 -F "{{" $file

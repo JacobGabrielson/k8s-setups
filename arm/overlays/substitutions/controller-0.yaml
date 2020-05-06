@@ -1,0 +1,2 @@
+ETCD_NAME: controller-0
+INTERNAL_IP: 10.240.0.10
